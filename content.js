@@ -1,5 +1,5 @@
 var canvasWidth = 500;
-var canvasHeight = 400;
+var canvasHeight = 500;
 var canvasRatio = canvasWidth / canvasHeight;
 var uploadImg;
 var rect = createRect();
@@ -100,6 +100,13 @@ function onMouseUp(e) {
   drawImage();
   rect = createRect();
   canvas.removeEventListener("mousemove", onMouseMove, false);
+}
+
+document.getElementById("dl_canvas").onclick = (e) => {
+  var link = document.createElement("a");
+  link.href = canvas.toDataURL("image/png");
+  link.download = "add-bamboo.png";
+  link.click();
 }
 
 inputI.addEventListener("change", loadLocalImage, false);
