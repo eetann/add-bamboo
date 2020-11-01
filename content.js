@@ -20,44 +20,6 @@ var ctx = canvas.getContext("2d");
 ctx.fillStyle = "gray";
 ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-function drawImage() {
-  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-  ctx.fillStyle = "gray";
-  ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-  ctx.drawImage(img, x, y, imgWidth, imgHeight);
-  rects.forEach((obj) => drawBamboo(obj));
-}
-
-function loadLocalImage(e) {
-  var file = e.target.files[0];
-  var reader = new FileReader();
-  reader.onload = () => {
-    uploadImg = reader.result;
-    img.src = uploadImg;
-    img.onload = () => {
-      var imgRatio = img.width / img.height;
-      if (imgRatio <= canvasRatio) {
-        // 縦に合わせる
-        imgHeight = canvasHeight;
-        imgWidth = canvasHeight / img.height * img.width;
-      } else {
-        // 横に合わせる
-        imgWidth = canvasWidth;
-        imgHeight = canvasWidth / img.width * img.height;
-      }
-      x = (canvasWidth - imgWidth) / 2;
-      y = (canvasHeight - imgHeight) / 2;
-      drawImage();
-    }
-  }
-  reader.readAsDataURL(file);
-}
-
-inputI.addEventListener("change", loadLocalImage, false);
-
-canvas.addEventListener("mousedown", onMouseDown, false);
-canvas.addEventListener("mouseup", onMouseUp, false);
-
 function drawRect(obj, color) {
   ctx.fillStyle = color;
   ctx.fillRect(obj.x, obj.y, obj.w, obj.h);
@@ -80,6 +42,40 @@ function drawBamboo(obj) {
   }
 }
 
+function drawImage() {
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+  ctx.fillStyle = "gray";
+  ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+  ctx.drawImage(img, x, y, imgWidth, imgHeight);
+  rects.forEach((obj) => drawBamboo(obj));
+}
+
+function loadLocalImage(e) {
+  var file = e.target.files[0];
+  var reader = new FileReader();
+  reader.onload = () => {
+    uploadImg = reader.result;
+    img.src = uploadImg;
+    img.onload = () => {
+      rects = [];
+      var imgRatio = img.width / img.height;
+      if (imgRatio <= canvasRatio) {
+        // 縦に合わせる
+        imgHeight = canvasHeight;
+        imgWidth = canvasHeight / img.height * img.width;
+      } else {
+        // 横に合わせる
+        imgWidth = canvasWidth;
+        imgHeight = canvasWidth / img.width * img.height;
+      }
+      x = (canvasWidth - imgWidth) / 2;
+      y = (canvasHeight - imgHeight) / 2;
+      drawImage();
+    }
+  }
+  reader.readAsDataURL(file);
+}
+
 function createRect() {
   return {x: 0, y: 0, w: 0, h: 0}
 }
@@ -100,9 +96,12 @@ function onMouseMove(e) {
 }
 
 function onMouseUp(e) {
-  // TODO: wやhが負なら入れ替える
   rects.push(rect);
   drawImage();
   rect = createRect();
   canvas.removeEventListener("mousemove", onMouseMove, false);
 }
+
+inputI.addEventListener("change", loadLocalImage, false);
+canvas.addEventListener("mousedown", onMouseDown, false);
+canvas.addEventListener("mouseup", onMouseUp, false);
